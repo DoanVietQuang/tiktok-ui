@@ -6,7 +6,7 @@ import { faCircleXmark, faMagnifyingGlass, faSpinner } from '@fortawesome/free-s
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Wrapper as PopperWrapper } from '~/components/Popper';
 import { useDebouce } from '~/hooks';
-import * as searchServies from '~/apiServices/searchServices';
+import * as searchServies from '~/services/searchService';
 import AccountItem from '~/components/AccountItem';
 import styles from './Search.module.scss';
 const cx = classNames.bind(styles);
@@ -14,37 +14,38 @@ const cx = classNames.bind(styles);
 function Search() {
     const [searchValue, setSearchValue] = useState('');
     const [searchResult, setSearchResult] = useState([]);
-
     const [showResutl, setShowResult] = useState(true);
     const [loading, setLoading] = useState();
+
+    const debouced = useDebouce(searchValue, 500);
+
     const inputRef = useRef();
+
     const handleChange = (e) => {
         const searchValue = e.target.value;
         if (!searchValue.startsWith(' ')) setSearchValue(searchValue);
     };
 
-    const debouced = useDebouce(searchValue, 500);
     useEffect(() => {
-        setTimeout(() => {
-            if (!debouced.trim()) {
-                setSearchResult([]);
-                return;
-            }
+        if (!debouced.trim()) {
+            setSearchResult([]);
+            return;
+        }
+        const fetchApi = async () => {
             setLoading(true);
-            const fechApi = async () => {
-                setLoading(true);
-                const result = await searchServies.search(debouced);
-                setSearchResult(result);
-                setLoading(false);
-            };
-            fechApi();
-        }, 0);
+            const result = await searchServies.search(debouced);
+            setSearchResult(result);
+            setLoading(false);
+        };
+        fetchApi();
     }, [debouced]);
+
     const handelClear = () => {
         setSearchValue('');
         setSearchResult([]);
         inputRef.current.focus();
     };
+
     const handleHideResult = () => {
         setShowResult(false);
     };
