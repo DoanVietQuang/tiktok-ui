@@ -3,6 +3,7 @@
     width: 361px;
 }
 .search {
+    
     position: relative;
     width: 361px;
     height: var(--search-height);
@@ -14,6 +15,7 @@
     input {
         flex: 1;
         height: 100%;
+        padding-right: 40px;
         color: var(--black);
         font-size: 1.6rem;
         background-color: transparent;
